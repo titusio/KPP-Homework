@@ -51,14 +51,22 @@
 
 \begin{figure}[h]
   \centering
-  \begin{tikzpicture}[x=0.02cm, y=0.02cm]
-
-  \begin{scope}[yshift=14cm]
+  \resizebox{\linewidth}{!}{%
+  \begin{tikzpicture}[x=0.04cm, y=0.05cm]
     % Axes
-    \draw[->, thick] (0,0) -- (600,0) node[right] {Time};
-    \draw[->, thick] (0,0) -- (0,128)  node[above] {\#Cores};
-
-    % Jobs (x, y, width, height, color)
+    \draw[->, thick] (0,0) -- (610,0) node[right] {Time};
+    \draw[->, thick] (0,0) -- (0,138) node[above] {\#Cores};
+    % X axis ticks
+    \foreach \x in {0,100,200,300,400,500,570} {
+      \draw (\x,-2.5) -- (\x,2.5);
+      \node[below,font=\small] at (\x,-2.5) {\x};
+    }
+    % Y axis ticks
+    \foreach \y in {0,16,32,48,64,80,96,112,128} {
+      \draw (-7,\y) -- (7,\y);
+      \node[left,font=\small] at (-7,\y) {\y};
+    }
+    % Jobs (x, y, width, height, color, label)
     \job{0}{0}{120}{80}{job1color}{1}
     \job{120}{0}{30}{48}{job2color}{2}
     \job{150}{0}{60}{80}{job3color}{3}
@@ -73,24 +81,30 @@
     \job{510}{0}{20}{32}{job12color}{12}
     \job{530}{0}{30}{64}{job13color}{13}
     \job{560}{0}{10}{16}{job14color}{14}
-  \end{scope}
-
-
-\end{tikzpicture}
-    \caption{Scheduling von Jobs mit einem FIFO-Scheduler}
-    \label{fig:fifoScheduler}
+  \end{tikzpicture}}
+  \caption{Scheduling von Jobs mit einem FIFO-Scheduler}
+  \label{fig:fifoScheduler}
 \end{figure}
 
 % easy scheduling
 \begin{figure}[h]
   \centering
-  \begin{tikzpicture}[x=0.02cm, y=0.02cm]
-
-  \begin{scope}[yshift=14cm]
+  \resizebox{0.46\linewidth}{!}{%
+  \begin{tikzpicture}[x=0.04cm, y=0.05cm]
     % Axes
-    \draw[->, thick] (0,0) -- (600,0) node[right] {Time};
-    \draw[->, thick] (0,0) -- (0,128)  node[above] {\#Cores};
-
+    \draw[->, thick] (0,0) -- (260,0) node[right] {Time};
+    \draw[->, thick] (0,0) -- (0,138) node[above] {\#Cores};
+    % X axis ticks
+    \foreach \x in {0,50,100,150,200,250} {
+      \draw (\x,-2.5) -- (\x,2.5);
+      \node[below,font=\small] at (\x,-2.5) {\x};
+    }
+    % Y axis ticks
+    \foreach \y in {0,16,32,48,64,80,96,112,128} {
+      \draw (-7,\y) -- (7,\y);
+      \node[left,font=\small] at (-7,\y) {\y};
+    }
+    % Jobs (x, y, width, height, color, label)
     \job{0}{0}{120}{80}{job1color}{1}
     \job{10}{80}{30}{48}{job2color}{2}
     \job{120}{0}{60}{80}{job3color}{3}
@@ -105,13 +119,9 @@
     \job{210}{32}{20}{32}{job12color}{12}
     \job{180}{0}{10}{16}{job14color}{14}
     \job{210}{64}{30}{64}{job13color}{13}
-    % Jobs (x, y, width, height, color)
-  \end{scope}
-
-
-\end{tikzpicture}
-    \caption{Scheduling von Jobs mit einem Easy Scheduler}
-    \label{fig:easyScheduler}
+  \end{tikzpicture}}
+  \caption{Scheduling von Jobs mit einem Easy Scheduler}
+  \label{fig:easyScheduler}
 \end{figure}
 
 
