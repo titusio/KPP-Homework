@@ -16,6 +16,7 @@
             forest       # forest
             tikz-qtree   # tikz-qtree
             blindtext    # blindtext
+            float        # float [H] placement
             babel-german # ngerman babel
             hyphen-german; # German hyphenation
       };
