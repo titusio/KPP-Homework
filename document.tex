@@ -4,12 +4,14 @@
 \usepackage{bbm}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{blindtext}
+\usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{forest}
 \usepackage{tikz-qtree}
 \usepackage[ngerman]{babel}
 
-\title{KPP Hausaufgabenblatt 1}
+\title{KPP Hausaufgaben}
 \author{Titus Hübner}
 \date{April 2026}
 
@@ -17,8 +19,15 @@
 
 \maketitle
 
-\section{Introduction}
+\section{Blatt 1}
 
+\subsection*{1.1 - Scheduling}
+
+Abbildung \ref{fig:fifoScheduler} zeigt die Ausführung von 14 Jobs auf einem System mit 128 Kernen, wobei die Jobs in der Reihenfolge ihrer Ankunft (First-In-First-Out, FIFO) geplant werden. Jeder Job hat eine bestimmte Anzahl von Kernen und eine bestimmte Laufzeit, die durch die Breite und Höhe der Rechtecke dargestellt wird.
+Abbildung \ref{fig:easyScheduler} zeigt die gleiche Menge von Jobs, jedoch mit einem "Easy Scheduler", der versucht, die Jobs so zu planen, dass die Ressourcen effizienter genutzt werden. In diesem Fall werden die Jobs so angeordnet, dass sie sich nicht gegenseitig blockieren und die verfügbaren Kerne optimal ausnutzen.
+
+Wir sehen, dass der FIFO-Scheduler zu einer suboptimalen Nutzung der Ressourcen führt, da einige Jobs warten müssen, obwohl genügend Kerne verfügbar sind. Der Easy Scheduler hingegen ermöglicht eine bessere Auslastung der Kerne und reduziert die Wartezeiten für die Jobs.
+Anschaulich zu sehen ist dies an der mittleren Verweilzeit, die unter dem FIFO-Scheduler mit durchschnittlich 302,14 Einheiten deutlich höher ist als unter dem Easy Scheduler mit durchschnittlich 81,43 Einheiten. Dies zeigt, dass der Easy Scheduler die Jobs effizienter plant und die Ressourcen besser nutzt.
 
 \definecolor{job1color}{RGB}{70,100,230}
 \definecolor{job2color}{RGB}{40,140,220}
@@ -40,13 +49,6 @@
   \filldraw[fill=#5, draw=black, line width=0.8pt, rounded corners=4pt]
     (#1,#2) rectangle (#1+#3, #2+#4);
   \node[font=\small\bfseries] at (#1+#3/2, #2+#4/2) {#6};
-}
-
-% ---- Helper macro ----
-% \job{x}{y}{width}{height}{color}
-\newcommand{\job}[5]{%
-  \filldraw[fill=#5, draw=black, line width=0.8pt, rounded corners=4pt]
-    (#1,#2) rectangle (#1+#3, #2+#4);
 }
 
 \begin{figure}[h]
@@ -124,7 +126,75 @@
   \label{fig:easyScheduler}
 \end{figure}
 
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|c|r|r|r|r|r|}
+    \hline
+    \textbf{Job} & \textbf{Ankunft} & \textbf{Startzeit} & \textbf{Laufzeit} & \textbf{Fertigstellung} & \textbf{Verweilzeit} \\
+    \hline
+    1  &   0 &   0 & 120 & 120 & 120 \\
+    2  &  10 & 120 &  30 & 150 & 140 \\
+    3  &  20 & 150 &  60 & 210 & 190 \\
+    4  &  30 & 210 &  40 & 250 & 220 \\
+    5  &  40 & 250 &  70 & 320 & 280 \\
+    6  &  50 & 320 &  30 & 350 & 300 \\
+    7  &  60 & 350 &  20 & 370 & 310 \\
+    8  &  70 & 370 &  50 & 420 & 350 \\
+    9  &  80 & 420 &  30 & 450 & 370 \\
+    10 & 110 & 450 &  20 & 470 & 360 \\
+    11 & 130 & 470 &  40 & 510 & 380 \\
+    12 & 140 & 510 &  20 & 530 & 390 \\
+    13 & 150 & 530 &  30 & 560 & 410 \\
+    14 & 160 & 560 &  10 & 570 & 410 \\
+    \hline
+    \textbf{Ø} & & & & & \textbf{302,14} \\
+    \hline
+  \end{tabular}
+  \caption{Verweilzeiten unter dem FIFO-Scheduler ($\bar{W} = \tfrac{4230}{14} \approx 302{,}14$)}
+  \label{tab:fifoVerweilzeit}
+\end{table}
 
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|c|r|r|r|r|r|}
+    \hline
+    \textbf{Job} & \textbf{Ankunft} & \textbf{Startzeit} & \textbf{Laufzeit} & \textbf{Fertigstellung} & \textbf{Verweilzeit} \\
+    \hline
+    1  &   0 &   0 & 120 & 120 & 120 \\
+    2  &  10 &  10 &  30 &  40 &  30 \\
+    3  &  20 & 120 &  60 & 180 & 160 \\
+    4  &  30 &  40 &  40 &  80 &  50 \\
+    5  &  40 &  40 &  70 & 110 &  70 \\
+    6  &  50 & 110 &  30 & 140 &  90 \\
+    7  &  60 &  80 &  20 & 100 &  40 \\
+    8  &  70 & 140 &  50 & 190 & 120 \\
+    9  &  80 &  80 &  30 & 110 &  30 \\
+    10 & 110 & 190 &  20 & 210 & 100 \\
+    11 & 130 & 210 &  40 & 250 & 120 \\
+    12 & 140 & 210 &  20 & 230 &  90 \\
+    13 & 150 & 210 &  30 & 240 &  90 \\
+    14 & 160 & 180 &  10 & 190 &  30 \\
+    \hline
+    \textbf{Ø} & & & & & \textbf{81,43} \\
+    \hline
+  \end{tabular}
+  \caption{Verweilzeiten unter dem Easy Scheduler ($\bar{W} = \tfrac{1140}{14} \approx 81{,}43$)}
+  \label{tab:easyVerweilzeit}
+\end{table}
+
+\subsection*{1.2 - Klassifikation}
+
+\subsection*{Hardwareklassifikation}
+
+Einen einzelnen Knoten können wir als MIMD klassifizieren. Auch schon einer von zwei Prozessoren ist schon in der Lage, mit den 12 Kernen mehrere Instruction Streams und Datastreams zu verarbeiten. Ein zweiter Prozessor ändert die Klassifikation nicht.
+
+Ein verteiltes System mit mehreren Knoten kann gleich Klassifiziert werden. Die Begründung besteht zu einem großen Teil weiter. Allerdings sind die Knoten noch unabhängier voneinander, da sie ganz andere Programme ausführen können. Auf einem einzelnen Knoten wird eine kleinere Menge von Programmen ausgeführt, die dann mehrere Kerne nutzen. Auf einem verteilten System können hingegen mehrere Programme auf verschiedenen Knoten ausgeführt werden, die dann jeweils mehrere Kerne nutzen.
+
+\subsection*{Kommunikationsmodell}
+
+Einzelne Knoten kommunizieren über geteilten Speicher. Da beide Prozessoren integrierte Memory Controller besitzen, können wir den Speicherzugriff als Non-Uniform Memory Access (NUMA)\footnote{\url{https://en.wikipedia.org/wiki/Non-uniform_memory_access}}klassifizieren. So können beide Prozessoren auf den gesamten Hauptspeicher zugreifen, aber die Zugriffszeiten variieren je nachdem, ob der Zugriff auf den lokalen oder den entfernten Speicher erfolgt.
+
+Verschiedene Knoten kommunizieren über ein Netzwerk, was als Message Passing klassifiziert werden kann. Es gibt keinen gemeinsamen Speicher zwischen den Knoten, und die Kommunikation erfolgt durch den Austausch von Nachrichten über das Netzwerk.
 
 \subsection*{1.3 - Netzentwurf}
 
@@ -178,9 +248,9 @@ d_{\max}
     = 8 + 16 = 24
 $$
 
-Die Dimension des Fat Tree Netzwerkes ist mit $3$ also deutlich geringer. 
+Die Dimension des Fat Tree Netzwerkes ist mit $4$ also deutlich geringer. 
 
-Knoten im Torus haben jeweils 4 Verbindungen also ist der Grad für jeden Knoten 4. Für das Torus Netzwerk ist der Grad 1 für die Blätter und die Wurzel. Switches (also innere Knoten) haben nach unten jeweils 8 Verbindungen und eine Verbindung nach oben. Sie haben also Grad 9.
+Knoten im Torus haben jeweils 4 Verbindungen also ist der Grad für jeden Knoten 4. Für das Torus Netzwerk ist der Grad der Blätter gleich 1 und der Grad der Wurzel 8. Switches (also innere Knoten) haben nach unten jeweils 8 Verbindungen und eine Verbindung nach oben. Sie haben also Grad 9.
 
 Da Geschwindigkeit in verteilten System vor allem durch möglichst wenige Hops entsteht, halten wir das Fat Tree Netzwerk für optiomaler.
 
