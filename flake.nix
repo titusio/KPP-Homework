@@ -15,6 +15,7 @@
             bbm-macros   # bbm.sty
             forest       # forest
             tikz-qtree   # tikz-qtree
+            blindtext    # blindtext
             babel-german # ngerman babel
             hyphen-german; # German hyphenation
       };
