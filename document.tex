@@ -12,15 +12,15 @@
 \usepackage{float}
 \usepackage[ngerman]{babel}
 
-\title{KPP Hausaufgaben}
-\author{Titus Hübner}
+\title{Konzepte Paralleler Programmierung Hausaufgaben}
+\author{Josef Trömer, Titus Hübner}
 \date{April 2026}
 
 \begin{document}
 
 \maketitle
 
-\section{Blatt 1}
+\section*{Blatt 1}
 
 \subsection*{1.1 - Scheduling}
 
@@ -28,7 +28,7 @@ Abbildung \ref{fig:fifoScheduler} zeigt die Ausführung von 14 Jobs auf einem Sy
 Abbildung \ref{fig:easyScheduler} zeigt die gleiche Menge von Jobs, jedoch mit einem "Easy Scheduler", der versucht, die Jobs so zu planen, dass die Ressourcen effizienter genutzt werden. In diesem Fall werden die Jobs so angeordnet, dass sie sich nicht gegenseitig blockieren und die verfügbaren Kerne optimal ausnutzen.
 
 Wir sehen, dass der FIFO-Scheduler zu einer suboptimalen Nutzung der Ressourcen führt, da einige Jobs warten müssen, obwohl genügend Kerne verfügbar sind. Der Easy Scheduler hingegen ermöglicht eine bessere Auslastung der Kerne und reduziert die Wartezeiten für die Jobs.
-Anschaulich zu sehen ist dies an der mittleren Verweilzeit, die unter dem FIFO-Scheduler mit durchschnittlich 302,14 Einheiten deutlich höher ist als unter dem Easy Scheduler mit durchschnittlich 81,43 Einheiten. Dies zeigt, dass der Easy Scheduler die Jobs effizienter plant und die Ressourcen besser nutzt.
+Anschaulich zu sehen ist dies an der mittleren Verweilzeit\footnote{Die Verweilzeit wird hier definiert als Startzeit minus Ankunftszeit, d.\,h.\ die Wartezeit eines Jobs bis zu seinem Ausführungsbeginn. Diese Definition entstammt dem Modul \textit{Betriebssysteme und Rechnernetze}; in der Vorlesung zu diesem Modul wurde sie leider nicht explizit angegeben.}, die unter dem FIFO-Scheduler mit durchschnittlich 261,43 Einheiten deutlich höher ist als unter dem Easy Scheduler mit durchschnittlich 40,71 Einheiten. Dies zeigt, dass der Easy Scheduler die Jobs effizienter plant und die Ressourcen besser nutzt.
 
 \definecolor{job1color}{RGB}{70,100,230}
 \definecolor{job2color}{RGB}{40,140,220}
@@ -133,25 +133,25 @@ Anschaulich zu sehen ist dies an der mittleren Verweilzeit, die unter dem FIFO-S
     \hline
     \textbf{Job} & \textbf{Ankunft} & \textbf{Startzeit} & \textbf{Laufzeit} & \textbf{Fertigstellung} & \textbf{Verweilzeit} \\
     \hline
-    1  &   0 &   0 & 120 & 120 & 120 \\
-    2  &  10 & 120 &  30 & 150 & 140 \\
-    3  &  20 & 150 &  60 & 210 & 190 \\
-    4  &  30 & 210 &  40 & 250 & 220 \\
-    5  &  40 & 250 &  70 & 320 & 280 \\
-    6  &  50 & 320 &  30 & 350 & 300 \\
-    7  &  60 & 350 &  20 & 370 & 310 \\
-    8  &  70 & 370 &  50 & 420 & 350 \\
-    9  &  80 & 420 &  30 & 450 & 370 \\
-    10 & 110 & 450 &  20 & 470 & 360 \\
-    11 & 130 & 470 &  40 & 510 & 380 \\
-    12 & 140 & 510 &  20 & 530 & 390 \\
-    13 & 150 & 530 &  30 & 560 & 410 \\
-    14 & 160 & 560 &  10 & 570 & 410 \\
+    1  &   0 &   0 & 120 & 120 &   0 \\
+    2  &  10 & 120 &  30 & 150 & 110 \\
+    3  &  20 & 150 &  60 & 210 & 130 \\
+    4  &  30 & 210 &  40 & 250 & 180 \\
+    5  &  40 & 250 &  70 & 320 & 210 \\
+    6  &  50 & 320 &  30 & 350 & 270 \\
+    7  &  60 & 350 &  20 & 370 & 290 \\
+    8  &  70 & 370 &  50 & 420 & 300 \\
+    9  &  80 & 420 &  30 & 450 & 340 \\
+    10 & 110 & 450 &  20 & 470 & 340 \\
+    11 & 130 & 470 &  40 & 510 & 340 \\
+    12 & 140 & 510 &  20 & 530 & 370 \\
+    13 & 150 & 530 &  30 & 560 & 380 \\
+    14 & 160 & 560 &  10 & 570 & 400 \\
     \hline
-    \textbf{Ø} & & & & & \textbf{302,14} \\
+    \textbf{Ø} & & & & & \textbf{261,43} \\
     \hline
   \end{tabular}
-  \caption{Verweilzeiten unter dem FIFO-Scheduler ($\bar{W} = \tfrac{4230}{14} \approx 302{,}14$)}
+  \caption{Verweilzeiten unter dem FIFO-Scheduler ($\bar{W} = \tfrac{3660}{14} \approx 261{,}43$)}
   \label{tab:fifoVerweilzeit}
 \end{table}
 
@@ -161,25 +161,25 @@ Anschaulich zu sehen ist dies an der mittleren Verweilzeit, die unter dem FIFO-S
     \hline
     \textbf{Job} & \textbf{Ankunft} & \textbf{Startzeit} & \textbf{Laufzeit} & \textbf{Fertigstellung} & \textbf{Verweilzeit} \\
     \hline
-    1  &   0 &   0 & 120 & 120 & 120 \\
-    2  &  10 &  10 &  30 &  40 &  30 \\
-    3  &  20 & 120 &  60 & 180 & 160 \\
-    4  &  30 &  40 &  40 &  80 &  50 \\
-    5  &  40 &  40 &  70 & 110 &  70 \\
-    6  &  50 & 110 &  30 & 140 &  90 \\
-    7  &  60 &  80 &  20 & 100 &  40 \\
-    8  &  70 & 140 &  50 & 190 & 120 \\
-    9  &  80 &  80 &  30 & 110 &  30 \\
-    10 & 110 & 190 &  20 & 210 & 100 \\
-    11 & 130 & 210 &  40 & 250 & 120 \\
-    12 & 140 & 210 &  20 & 230 &  90 \\
-    13 & 150 & 210 &  30 & 240 &  90 \\
-    14 & 160 & 180 &  10 & 190 &  30 \\
+    1  &   0 &   0 & 120 & 120 &   0 \\
+    2  &  10 &  10 &  30 &  40 &   0 \\
+    3  &  20 & 120 &  60 & 180 & 100 \\
+    4  &  30 &  40 &  40 &  80 &  10 \\
+    5  &  40 &  40 &  70 & 110 &   0 \\
+    6  &  50 & 110 &  30 & 140 &  60 \\
+    7  &  60 &  80 &  20 & 100 &  20 \\
+    8  &  70 & 140 &  50 & 190 &  70 \\
+    9  &  80 &  80 &  30 & 110 &   0 \\
+    10 & 110 & 190 &  20 & 210 &  80 \\
+    11 & 130 & 210 &  40 & 250 &  80 \\
+    12 & 140 & 210 &  20 & 230 &  70 \\
+    13 & 150 & 210 &  30 & 240 &  60 \\
+    14 & 160 & 180 &  10 & 190 &  20 \\
     \hline
-    \textbf{Ø} & & & & & \textbf{81,43} \\
+    \textbf{Ø} & & & & & \textbf{40,71} \\
     \hline
   \end{tabular}
-  \caption{Verweilzeiten unter dem Easy Scheduler ($\bar{W} = \tfrac{1140}{14} \approx 81{,}43$)}
+  \caption{Verweilzeiten unter dem Easy Scheduler ($\bar{W} = \tfrac{570}{14} \approx 40{,}71$)}
   \label{tab:easyVerweilzeit}
 \end{table}
 
@@ -191,25 +191,19 @@ Einen einzelnen Knoten können wir als MIMD klassifizieren. Auch schon einer von
 
 Ein verteiltes System mit mehreren Knoten kann gleich Klassifiziert werden. Die Begründung besteht zu einem großen Teil weiter. Allerdings sind die Knoten noch unabhängier voneinander, da sie ganz andere Programme ausführen können. Auf einem einzelnen Knoten wird eine kleinere Menge von Programmen ausgeführt, die dann mehrere Kerne nutzen. Auf einem verteilten System können hingegen mehrere Programme auf verschiedenen Knoten ausgeführt werden, die dann jeweils mehrere Kerne nutzen.
 
+Der Vergleich des einzelnen Knoten mit dem Turing Cluster zeigt schön die in der Vorlesung vorgestellte Unterteilung der Klasse MIMD in jeweils Mehrprozessorsysteme und Verteilte Systeme.
+
 \subsection*{Kommunikationsmodell}
 
 Einzelne Knoten kommunizieren über geteilten Speicher. Da beide Prozessoren integrierte Memory Controller besitzen, können wir den Speicherzugriff als Non-Uniform Memory Access (NUMA)\footnote{\url{https://en.wikipedia.org/wiki/Non-uniform_memory_access}}klassifizieren. So können beide Prozessoren auf den gesamten Hauptspeicher zugreifen, aber die Zugriffszeiten variieren je nachdem, ob der Zugriff auf den lokalen oder den entfernten Speicher erfolgt.
 
-Verschiedene Knoten kommunizieren über ein Netzwerk, was als Message Passing klassifiziert werden kann. Es gibt keinen gemeinsamen Speicher zwischen den Knoten, und die Kommunikation erfolgt durch den Austausch von Nachrichten über das Netzwerk.
+    Verschiedene Knoten kommunizieren über ein Netzwerk, was als Message Passing klassifiziert werden kann. Es gibt keinen gemeinsamen Speicher zwischen den Knoten, und die Kommunikation erfolgt durch den Austausch von Nachrichten über das Netzwerk. Wir können dieses Netzwerk als NORMA einstufen.
 
 \subsection*{1.3 - Netzentwurf}
 
 \subsubsection*{Fat-Tree}
 
-Das entworfene Fat-Tree-Netzwerk besteht aus drei Ebenen, wie in
-Abbildung~\ref{fig:fatTree} schematisch dargestellt. Da die Uplink-Ports
-nicht als dedizierte Ports zählen, kann jeder der 64 Leaf-Switches 8
-Prozessorkerne anschließen ($512 / 8 = 64$). Diese werden über 8 Switches auf
-der Zwischenebene verbunden, die wiederum an einen einzelnen Root-Switch
-angeschlossen sind. Der Durchmesser beträgt 4, da ein Paket maximal 2 Hops zur
-Wurzel und 2 Hops hinunter zum Ziel benötigt. Blattknoten (Prozessorkerne)
-haben Grad~1, Intermediate-Switches haben Grad~9 (8 Verbindungen nach unten,
-1 nach oben), und der Root-Switch hat Grad~8.
+Das entworfene Fat-Tree-Netzwerk besteht aus drei Ebenen, wie in Abbildung~\ref{fig:fatTree} schematisch dargestellt. Da die Uplink-Ports nicht als dedizierte Ports zählen, kann jeder der 64 Leaf-Switches 8 Prozessorkerne anschließen ($512 / 8 = 64$). Diese werden über 8 Switches auf der Zwischenebene verbunden, die wiederum an einen einzelnen Root-Switch angeschlossen sind. Der Durchmesser beträgt 6, da ein Paket maximal 3 Hops zur Wurzel und 3 Hops hinunter zum Ziel benötigt. Blattknoten (Prozessorkerne) haben Grad~1, Intermediate-Switches haben Grad~9 (8 Verbindungen nach unten, 1 nach oben), und der Root-Switch hat Grad~8.
 
 \begin{figure}[H]
   \centering
@@ -252,26 +246,27 @@ des Torus ergibt sich damit zu:
         & \textbf{Fat-Tree} & \textbf{2D-Torus ($16 \times 32$)} \\
         \midrule
         Knotengrad  & 1 (Kerne), 8--9 (Switches) & 4 (alle Knoten) \\
-        Durchmesser & 4                          & 24              \\
+        Durchmesser & 6                          & 24              \\
         \bottomrule
     \end{tabular}
     \caption{Vergleich der Netzwerktopologien}
 \end{table}
 
 Da Latenz in verteilten Systemen vor allem durch die Anzahl der Hops bestimmt
-wird, ist der Fat-Tree klar vorzuziehen: sein Durchmesser von~4 gegenüber~24
+wird, ist der Fat-Tree klar vorzuziehen: sein Durchmesser von~6 gegenüber~24
 beim Torus bedeutet deutlich kürzere Kommunikationswege. Der gleichmäßige
 Grad~4 des Torus ist zwar konstruktiv einfacher und hardwaretechnisch
-günstiger, rechtfertigt jedoch den sechsfach größeren Durchmesser nicht.\subsection*{1.4 - Slurm}
+günstiger, rechtfertigt jedoch den sechsfach größeren Durchmesser nicht.
+
+\subsection*{1.4 - Slurm}
 
 \subsubsection*{Aufgabe a}
 Ein Ressource Manager (Workload Manager) verwaltet die Ressourcen einer Rechenanlage. Das manuelle Verwalten einer solchen Anlage aufwändig für eine einzelne Person und fast unmöglich für mehrere unabhängig voneinander arbeitende Personen.
 Alle müssten sich untereinander abstimmen, damit die Nodes sinnvoll aufgeteilt werden. Zudem müsste auch manuell jeder Job gestartet werden, was jedoch nachts unwahrscheinlich ist.
 
 \subsubsection*{Aufgabe b}
-Die \texttt{sbatch} Skripte sind angehängt. Mittels \texttt{make} können diese ausgeführt werden. 
+Die \texttt{sbatch} Skripte sind angehängt. Mittels \texttt{make} können diese ausgeführt werden.
 
 
 
 \end{document}
-
