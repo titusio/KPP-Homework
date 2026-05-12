@@ -9,3 +9,9 @@ result
 *.synctex.gz
 
 .DS_Store
+
+# compiled binaries
+ex2/structures-O0
+ex2/structures-O3
+ex2/arrays-O0
+ex2/arrays-O3

@@ -1,0 +1,82 @@
+\section*{Blatt 2}
+
+\subsection*{2.2 - Datenlayout}
+
+\subsubsection*{a) Datenlayout der Partikel}
+
+In Abbildung \ref{fig:data_layout} sind die ersten drei Partikel abgebildet. Jedes Element besteht aus aus 8 Datenelementen mit jeweils 4 Byte Größe. Die Cachezeilengröße beträgt 64 Byte, somit passen genau zwei Elemente in eine Cachezeile. Diese Grenze ist in rot eingezeichnet.
+
+\begin{figure}[H]
+  \centering
+  \makebox[\linewidth][c]{\includegraphics[width=0.9\paperwidth]{Images/ex2-2-Layout.png}}
+  \caption{Datenlayout der ersten drei Partikel}
+  \label{fig:data_layout}
+\end{figure}
+
+\subsubsection*{b) Cache Misses}
+
+Für jede Berechnung sind die 32 Byte eines Partikels notwendig und der Zeitunterschied $dt$. Laut Annahme der Aufgabenstellung beginnt jede $\texttt{calloc}$ Speicherreservierung immer an der Grenze einer Cachezeile. Deswegen muss $dt$ in einer anderen Cachezeile vorhanden sein. Des weiteren gehen wir davon aus, dass $dt$ für alle Berechnungen gleich ist.
+
+Sei $n$ die Anzahl an Kernen, auf die die Berechnung aufgeteilt wird. Jeder Kern braucht Zugriff auf $dt$. Da beim ersten Zugriff $dt$ noch nicht im Cache vorhanden ist, wird für jeden Kern ein Cache Miss verzeichnet, da $dt$ initial geladen werden muss. Dafür muss gelten, dass $dt$ während eines Berechnungschrittes konstant bleibt.
+
+Beim Laden einer Cachezeile werden 2 Partikel geladen, da eine Cachezeile genau zwei Partikel enthält. So erhalten wir bei jedem zweiten Zugriff auf einen Partikel einen Cache Hit.
+
+Zusammen können wir also die Formel
+
+$$
+\text{CacheMisses} = \frac{1000000}{2} + n
+$$
+
+Diese Formel gilt allgemein für beliebige $n \geq 1$. Da die Aufgabenstellung von einem einzelnen Prozessor ausgeht ($n = 1$), ergibt sich ein konkreter Wert von $\frac{1000000}{2} + 1 = 500001$ Cache Misses. Die Verdrängungsstrategie des Caches wird weder hier noch in der Vorlesung beschrieben. Gelten muss aber, dass die Cachezeile mit $dt$ nicht verdrängt wird, da sonst bei jedem Zugriff auf einen Partikel ein Cache Miss verzeichnet werden würde. Es muss also eine Verdrängungsstrategie vorliegen, die $dt$ im Cache hält, solange die Berechnung läuft. Die bereits benutzten Partikel können verdrängt werden, da sie nicht mehr benötigt werden.
+
+\subsubsection*{c) Cache Misses mit 5 Arrays}
+\label{sec:cache-misses-arrays}
+
+Der einstufige Cache des Kerns beträgt 256 KBytes = 262.144 Bytes. Jede Cache Zeile ist 64 Byte groß, somit können 32.768 Cachezeilen im Cache gehalten werden. Eine davon muss die Cachezeile mit $dt$ sein, da sonst bei jedem Zugriff auf einen Partikel ein Cache Miss verzeichnet werden würde. 
+Um $\overrightarrow{r} \leftarrow \overrightarrow{r} + \overrightarrow{v} \cdot dt$ zu berechnen müssen folgende Zugriffe gemacht werden:
+
+Wir müssen insgesamt 6 Arrays laden, nämlich $\overrightarrow{r_x}$, $\overrightarrow{r_y}$, $\overrightarrow{r_z}$, $\overrightarrow{v_x}$, $\overrightarrow{v_y}$ und $\overrightarrow{v_z}$. Wir müssen die Arrays mit den Ids und Massen nicht laden, da diese nicht für die Berechnung notwendig sind. Jeder Zugriff auf ein Array führt zu einem Cache Miss, jedoch werden bei jedem Zugriff 16 weitere Elemente geladen, da in in den 64 Byte der Cachzeile $\frac{64}{4} = 16$ Elemente passen. Somit erhalten wir bei jedem 17. Zugriff auf ein Array einen Cache Miss, da die vorherigen 16 Elemente bereits im Cache sind. Es gilt also:
+
+$$
+\text{CacheMisses} = 6 \cdot \frac{1.000.000}{16} + 1 = 375.001
+$$
+
+Im Vergleich sehen wir als, dass die Anzahl der Cache Misses mit 5 Arrays deutlich geringer ist als mit einem Array, da bei einem Array nur 2 Elemente pro Cachezeile geladen werden, während bei 5 Arrays 16 Elemente pro Cachezeile geladen werden. Somit können wir die Anzahl der Cache Misses um $\frac{500.001 - 375.001}{500.001} \approx 25\%$ reduzieren, was eine deutliche Verbesserung darstellt.
+
+\subsection*{2.3 - Messungen}
+
+Die Berechnungen haben wir auf einem MacBook Pro M2 mit 16 GB RAM durchgeführt. Das Betriebssystem ist macOS 26.4.1 (Darwin 25.4.0) und der Compiler ist Apple clang 21.0.0 (clang-2100.0.123.102), target arm64. Der vollständige Quellcode (\texttt{structures.c}, \texttt{arrays.c}) sowie das \texttt{Makefile} sind im Archiv der Abgabe beigefügt.
+
+Da auf macOS die System-Header (z.B. \texttt{stdint.h}) im Xcode SDK liegen und nicht automatisch gefunden werden,
+musste im \texttt{Makefile} der Compiler explizit über \texttt{xcrun} gesetzt und der SDK-Pfad per \texttt{-isysroot}
+übergeben werden. Vermutlich liegt dies daran, dass der Nix-Paketmanager eine eigene \texttt{clang}-Version
+in den \texttt{PATH} einträgt, welche die macOS-System-Header nicht kennt und den Apple-Compiler verdrängt:
+
+\begin{verbatim}
+CC = $(shell xcrun -f clang)
+SDK = $(shell xcrun --sdk macosx --show-sdk-path)
+CFLAGS = -std=c11 -isysroot $(SDK)
+\end{verbatim}
+
+Folgende Messergebnisse haben wir erhalten.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|l|r|r|r|}
+    \hline
+    \textbf{Programm} & \textbf{Flag} & \textbf{real} & \textbf{user} & \textbf{sys} \\
+    \hline
+    structures & \texttt{-O0} & 4.004s & 3.565s & 0.029s \\
+    structures & \texttt{-O3} & 1.048s & 0.771s & 0.011s \\
+    arrays     & \texttt{-O0} & 3.068s & 2.788s & 0.021s \\
+    arrays     & \texttt{-O3} & 0.767s & 0.502s & 0.009s \\
+    \hline
+  \end{tabular}
+  \caption{Laufzeitmessungen mit \texttt{-O0} und \texttt{-O3}}
+  \label{tab:timing}
+\end{table}
+
+Wir können sehen, dass die unoptimierte Varianten (\texttt{-O0}) in beiden Fällen langsamer sind als die Compiler optimierten Varianten (\texttt{-O3}). Genau wie in Aufgabe 2.2c vorhergesagt, ist die Variante mit den Arrays pro Element schneller, da mehr Cache Hits auftreten.
+
+Der Speedup durch \texttt{-O3} ist in beiden Fällen ähnlich (ca. $3.8\times$ bei \texttt{structures}, ca. $4.0\times$ bei \texttt{arrays}). \texttt{-O3} aktiviert unter anderem Function Inlining (der \texttt{calculate}-Aufruf in \texttt{structures} entfällt), Loop Unrolling und bessere Registerzuweisung. Möglicherweise wird der \texttt{arrays}-Loop durch SIMD-Vektorisierung beschleunigt, da die Daten als zusammenhängende Arrays gleichen Typs vorliegen. Beim \texttt{structures}-Programm erschwert das AoS-Layout eine effiziente Vektorisierung über mehrere Partikel.
+
