@@ -1,7 +1,7 @@
 {
   description = "LaTeX Document Demo";
   inputs = {
-    nixpkgs.url = github:NixOS/nixpkgs/nixos-21.05;
+    nixpkgs.url = github:NixOS/nixpkgs/nixos-unstable;
     flake-utils.url = github:numtide/flake-utils;
   };
   outputs = {
@@ -56,6 +56,7 @@
             pkgs.zsh
             pkgs.texlab
             tex
+
             # pkgs.clang
           ];
           shellHook = "exec zsh";

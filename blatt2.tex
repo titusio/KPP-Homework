@@ -4,14 +4,55 @@
 
 \subsubsection*{a) Cachegröße}
 
-\texttt{0x10} ist hexadezimal für 16. Also 16 Bytes pro Cachezeile.
+\texttt{0x10} ist hexadezimal für 16. Die Funktion $f(x) = \lfloor x / \texttt{0x10} \rfloor \bmod 6$ teilt die Adresse zunächst durch 16, bevor der Modulo berechnet wird. Das bedeutet, dass alle Adressen innerhalb eines 16-Byte-Blocks auf denselben Cache-Agenten abgebildet werden. Da der Cache-Agent für eine gesamte Cachezeile zuständig ist, beträgt die Cachezeilengröße $\texttt{0x10} = 16$ Byte.
 
-\subsubsection*{b) - Zugriff auf Shared Data}
+\subsubsection*{b) Lesen von \texttt{0x30A0} aus modifiziertem L3-Cache}
+
+Um den Cache Agenten zu bestimmen, der für die Adresse \texttt{30A0} zuständig ist, müssen wir zu erst die Adresse in die gegebene Formel einsetzen:
 
 $$
-f(\texttt{0x30A0}) = \frac{\texttt{0x30A0}}{\texttt{0x10}} \mod 6 = \frac{12448}{16} \mod 6 = 778 \mod 6 = 4
+f(\texttt{0x30a0}) = \left\lfloor \frac{\texttt{0x30a0}}{\texttt{0x10}} \right\rfloor \mod 6 
+    = \left\lfloor \frac{12448}{16} \right\rfloor \mod 6 = 778 \mod 6 = 4
 $$
 
+Der Cache Agent 4 (null indiziert) ist zuständig. Die Adresse fällt in den Zuständigkeitsbreich des Home Agents 3 (auch null inidiziert).
+
+CPU0 fragt alle anderen Caches an. CPU2 antwortet mit den Daten, geht selbst in den Shared Zustand über und gibt sowohl Daten als auch die Instruktion, in Zustand \textit{Forward} überzugehen, an CPU0 weiter.
+Da nun die Daten nicht mehr modifiziert sind, muss der Home Agent informiert werden, damit die Daten im Hauptspeicher aktualisiert werden.
+
+Der Ablauf ist in Abbildung \ref{fig:2-1-b} visualisiert. Da nur Memory Agent 4 angesprochen wird, haben wir die anderen nicht mit dargestellt. Sie würden keine Funktion erfüllen.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=\linewidth]{Images/KPP 2-1-b(1).png}
+  \caption{Ablauf des Lesezugriffs auf \texttt{0x30A0} aus modifiziertem L3-Cache}
+  \label{fig:2-1-b}
+\end{figure}
+
+\subsubsection*{c) Read for Ownership auf \texttt{0x1070} aus Shared/Forward-Cache}
+
+Genau wie bei Aufgabe b müssen wir zu erst den Cache Agenten bestimmen:
+
+$$
+f(\texttt{0x1070}) = \left\lfloor \frac{\texttt{0x1070}}{\texttt{0x10}} \right\rfloor \mod 6 
+    = \left\lfloor \frac{4208}{16} \right\rfloor \mod 6 = 263 \mod 6 = 5
+$$
+
+Cache Agent 5 ist also zuständig. Die Adresse beginnt mit einer 1 also ist der null indizierte Home Agent 1 zuständig.
+
+CPU1 fragt alle anderen Caches mit dem Signal RFO (\textit{read for ownership}) an. Cache 3 antwortet, weil dieser Cache als Forward markiert wurde. Cache 2 antwortet mit IACK. 
+CPU3 antwortet mit den Daten, da es als Forward markiert wurde. Die Antwort enthält außerdem die Anweisung, in Exclusive überzugehen.
+Da ownership angefragt wurde, gehen CPU2 und CPU3 in den Invalid Zustand über. Da die Daten noch nicht modifiziert wurden und noch aktuell im Hauptspeicher vorliegen, geht CPU1 in den Exclusive Zustand über.
+Es könnte Argumentiert werden, dass RFO Modifizierungen impliziert. Ob jetzt in den Zustand Modified oder Exclusive übergegangen wird, habe ich nicht klar aus den Folien herauslesen können. Deshalb sei hiermit gesagt, dass wir uns über dieses Sachverhalt Gedanken gemacht haben.
+
+Abbildung \ref{fig:2-1-c} zeigt den vollständigen Ablauf des RFO-Zugriffs.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{Images/KPP 2-1-c.png}
+  \caption{Ablauf des RFO-Zugriffs auf \texttt{0x1070} aus Shared/Forward-Cache}
+  \label{fig:2-1-c}
+\end{figure}
 
 \subsection*{2.2 - Datenlayout}
 
