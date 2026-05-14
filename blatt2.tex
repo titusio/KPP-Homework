@@ -162,7 +162,8 @@ $$
 \text{CacheMisses} = 6 \cdot \frac{1.000.000}{16} + 1 = 375.001
 $$
 
-Im Vergleich sehen wir also, dass die Anzahl der Cache Misses mit 5 Arrays deutlich geringer ist als mit einem Array, da bei einem Array nur 2 Elemente pro Cachezeile geladen werden, während bei 5 Arrays 16 Elemente pro Cachezeile geladen werden. Somit können wir die Anzahl der Cache Misses um $\frac{500.001 - 375.001}{500.001} \approx 25\%$ reduzieren, was eine deutliche Verbesserung darstellt.
+Im Vergleich sehen wir also, dass die Anzahl der Cache Misses mit 5 Arrays deutlich geringer ist als mit einem Array, da bei einem Array nur 2 Elemente pro Cachezeile geladen werden, während bei 5 Arrays 16 Elemente pro Cachezeile geladen werden. Somit können wir die Anzahl der Cache Misses um $\frac{500.001 - 375.001}{500.001} \approx 25\%$ reduzieren, was eine deutliche Verbesserung darstellt. 
+Wir würden daher die Array-Implementierung (SoA) bevorzugen, da sie durch bessere Cache-Ausnutzung weniger Cache Misses verursacht. 
 
 \subsection*{2.3 - Messungen}
 
