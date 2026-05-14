@@ -4,7 +4,14 @@
 
 \subsubsection*{a) Cachegröße}
 
-\texttt{0x10} ist hexadezimal für 16. Wenn der Cache Agent für eine Adresse $x$ nun $x$ durch 16 teilt, erhält er die Adresse der Cachezeile, in der $x$ liegt. 
+\texttt{0x10} ist hexadezimal für 16. Also 16 Bytes pro Cachezeile.
+
+\subsubsection*{b) - Zugriff auf Shared Data}
+
+$$
+f(\texttt{0x30A0}) = \frac{\texttt{0x30A0}}{\texttt{0x10}} \mod 6 = \frac{12448}{16} \mod 6 = 778 \mod 6 = 4
+$$
+
 
 \subsection*{2.2 - Datenlayout}
 
