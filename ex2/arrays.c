@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define ELEMENT_COUNT 1000000
+#define ELEMENT_COUNT 10000000
 #define ITERATIONS 1000
 
 void randomize(float_t *array, size_t count) {

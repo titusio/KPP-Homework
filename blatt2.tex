@@ -8,14 +8,14 @@
 
 \subsubsection*{b) Lesen von \texttt{0x30A0} aus modifiziertem L3-Cache}
 
-Um den Cache Agenten zu bestimmen, der für die Adresse \texttt{30A0} zuständig ist, müssen wir zu erst die Adresse in die gegebene Formel einsetzen:
+Um den Cache Agenten zu bestimmen, der für die Adresse \texttt{30A0} zuständig ist, müssen wir zuerst die Adresse in die gegebene Formel einsetzen:
 
 $$
 f(\texttt{0x30a0}) = \left\lfloor \frac{\texttt{0x30a0}}{\texttt{0x10}} \right\rfloor \mod 6 
     = \left\lfloor \frac{12448}{16} \right\rfloor \mod 6 = 778 \mod 6 = 4
 $$
 
-Der Cache Agent 4 (null indiziert) ist zuständig. Die Adresse fällt in den Zuständigkeitsbreich des Home Agents 3 (auch null inidiziert).
+Der Cache Agent 4 (null indiziert) ist zuständig. Die Adresse fällt in den Zuständigkeitsbereich des Home Agents 3 (auch null indiziert).
 
 CPU0 fragt alle anderen Caches an. CPU2 antwortet mit den Daten, geht selbst in den Shared Zustand über und gibt sowohl Daten als auch die Instruktion, in Zustand \textit{Forward} überzugehen, an CPU0 weiter.
 Da nun die Daten nicht mehr modifiziert sind, muss der Home Agent informiert werden, damit die Daten im Hauptspeicher aktualisiert werden.
@@ -31,19 +31,19 @@ Der Ablauf ist in Abbildung \ref{fig:2-1-b} visualisiert. Da nur Memory Agent 4 
 
 \subsubsection*{c) Read for Ownership auf \texttt{0x1070} aus Shared/Forward-Cache}
 
-Genau wie bei Aufgabe b müssen wir zu erst den Cache Agenten bestimmen:
+Genau wie bei Aufgabe b müssen wir zuerst den Cache Agenten bestimmen:
 
 $$
 f(\texttt{0x1070}) = \left\lfloor \frac{\texttt{0x1070}}{\texttt{0x10}} \right\rfloor \mod 6 
     = \left\lfloor \frac{4208}{16} \right\rfloor \mod 6 = 263 \mod 6 = 5
 $$
 
-Cache Agent 5 ist also zuständig. Die Adresse beginnt mit einer 1 also ist der null indizierte Home Agent 1 zuständig.
+Cache Agent 5 ist also zuständig. Die Adresse beginnt mit einer 1, also ist der null indizierte Home Agent 1 zuständig.
 
 CPU1 fragt alle anderen Caches mit dem Signal RFO (\textit{read for ownership}) an. Cache 3 antwortet, weil dieser Cache als Forward markiert wurde. Cache 2 antwortet mit IACK. 
 CPU3 antwortet mit den Daten, da es als Forward markiert wurde. Die Antwort enthält außerdem die Anweisung, in Exclusive überzugehen.
 Da ownership angefragt wurde, gehen CPU2 und CPU3 in den Invalid Zustand über. Da die Daten noch nicht modifiziert wurden und noch aktuell im Hauptspeicher vorliegen, geht CPU1 in den Exclusive Zustand über.
-Es könnte Argumentiert werden, dass RFO Modifizierungen impliziert. Ob jetzt in den Zustand Modified oder Exclusive übergegangen wird, habe ich nicht klar aus den Folien herauslesen können. Deshalb sei hiermit gesagt, dass wir uns über dieses Sachverhalt Gedanken gemacht haben.
+Es könnte argumentiert werden, dass RFO Modifizierungen impliziert. Ob jetzt in den Zustand Modified oder Exclusive übergegangen wird, habe ich nicht klar aus den Folien herauslesen können. Deshalb sei hiermit gesagt, dass wir uns über diesen Sachverhalt Gedanken gemacht haben.
 
 Abbildung \ref{fig:2-1-c} zeigt den vollständigen Ablauf des RFO-Zugriffs.
 
@@ -58,18 +58,85 @@ Abbildung \ref{fig:2-1-c} zeigt den vollständigen Ablauf des RFO-Zugriffs.
 
 \subsubsection*{a) Datenlayout der Partikel}
 
-In Abbildung \ref{fig:data_layout} sind die ersten drei Partikel abgebildet. Jedes Element besteht aus aus 8 Datenelementen mit jeweils 4 Byte Größe. Die Cachezeilengröße beträgt 64 Byte, somit passen genau zwei Elemente in eine Cachezeile. Diese Grenze ist in rot eingezeichnet.
+In Abbildung \ref{fig:data_layout} sind die ersten drei Partikel abgebildet. Jedes Element besteht aus 8 Datenelementen mit jeweils 4 Byte Größe. Die Cachezeilengröße beträgt 64 Byte, somit passen genau zwei Elemente in eine Cachezeile. Jede Zeile der Grafik entspricht einer Cachezeile, und es ist zu erkennen, dass jeweils nur zwei Partikel in eine Cachezeile passen. Der orange Rahmen markiert dabei die Grenzen einer Cachezeile.
 
 \begin{figure}[H]
   \centering
-  \makebox[\linewidth][c]{\includegraphics[width=0.9\paperwidth]{Images/ex2-2-Layout.png}}
+  \resizebox{\linewidth}{!}{%
+  \begin{tikzpicture}
+
+% Boxes
+\foreach \x in {0,...,15}
+{
+    \draw (\x,0) rectangle (\x+1,1);
+}
+
+\foreach \x in {0,...,7}
+{
+    \draw (\x,-2) rectangle (\x+1,-1);
+}
+
+\draw[draw=green](0,0) rectangle (8,1);
+\draw[draw=green](8,0) rectangle (16,1);
+\draw[draw=green](0,-1) rectangle (8,-2);
+\draw[draw=orange](-0.1,-0.1) rectangle (16.1,1.1);
+
+\draw[draw=orange](-0.1,-0.9) rectangle (16.1,-2.1);
+
+
+
+
+% Values
+\node at (0.5,0.5) {id};
+\node at (1.5,0.5) {m};
+\node at (2.5,0.5) {rx};
+\node at (3.5,0.5) {ry};
+\node at (4.5,0.5) {rz};
+\node at (5.5,0.5) {vx};
+\node at (6.5,0.5) {vy};
+\node at (7.5,0.5) {vz};
+\node at (8.5,0.5) {id};
+\node at (9.5,0.5) {m};
+\node at (10.5,0.5) {rx};
+\node at (11.5,0.5) {ry};
+\node at (12.5,0.5) {rz};
+\node at (13.5,0.5) {vx};
+\node at (14.5,0.5) {vy};
+\node at (15.5,0.5) {vz};
+
+\node at (0.5,-1.5) {id};
+\node at (1.5,-1.5) {m};
+\node at (2.5,-1.5) {rx};
+\node at (3.5,-1.5) {ry};
+\node at (4.5,-1.5) {rz};
+\node at (5.5,-1.5) {vx};
+\node at (6.5,-1.5) {vy};
+\node at (7.5,-1.5) {vz};
+
+
+\node at (0,-0.3) {0x00};
+\node at (8,-0.3) {0x20};
+\node at (16,-0.3) {0x40};
+\node at (8,-2.3) {0x60};
+
+\node at (4.5,-0.4) {particles[0]};
+
+\node at (12.5,-0.4) {particles[1]};
+
+\node at (4.5,-2.4) {particles[2]};
+
+
+\node[text=orange] at (8,1.5) {Cachezeile};
+
+  \end{tikzpicture}%
+  }
   \caption{Datenlayout der ersten drei Partikel}
   \label{fig:data_layout}
 \end{figure}
 
 \subsubsection*{b) Cache Misses}
 
-Für jede Berechnung sind die 32 Byte eines Partikels notwendig und der Zeitunterschied $dt$. Laut Annahme der Aufgabenstellung beginnt jede $\texttt{calloc}$ Speicherreservierung immer an der Grenze einer Cachezeile. Deswegen muss $dt$ in einer anderen Cachezeile vorhanden sein. Des weiteren gehen wir davon aus, dass $dt$ für alle Berechnungen gleich ist.
+Für jede Berechnung sind die 32 Byte eines Partikels notwendig und der Zeitunterschied $dt$. Laut Annahme der Aufgabenstellung beginnt jede $\texttt{calloc}$ Speicherreservierung immer an der Grenze einer Cachezeile. Deswegen muss $dt$ in einer anderen Cachezeile vorhanden sein. Des Weiteren gehen wir davon aus, dass $dt$ für alle Berechnungen gleich ist.
 
 Sei $n$ die Anzahl an Kernen, auf die die Berechnung aufgeteilt wird. Jeder Kern braucht Zugriff auf $dt$. Da beim ersten Zugriff $dt$ noch nicht im Cache vorhanden ist, wird für jeden Kern ein Cache Miss verzeichnet, da $dt$ initial geladen werden muss. Dafür muss gelten, dass $dt$ während eines Berechnungschrittes konstant bleibt.
 
@@ -89,13 +156,13 @@ Diese Formel gilt allgemein für beliebige $n \geq 1$. Da die Aufgabenstellung v
 Der einstufige Cache des Kerns beträgt 256 KBytes = 262.144 Bytes. Jede Cache Zeile ist 64 Byte groß, somit können 32.768 Cachezeilen im Cache gehalten werden. Eine davon muss die Cachezeile mit $dt$ sein, da sonst bei jedem Zugriff auf einen Partikel ein Cache Miss verzeichnet werden würde. 
 Um $\overrightarrow{r} \leftarrow \overrightarrow{r} + \overrightarrow{v} \cdot dt$ zu berechnen müssen folgende Zugriffe gemacht werden:
 
-Wir müssen insgesamt 6 Arrays laden, nämlich $\overrightarrow{r_x}$, $\overrightarrow{r_y}$, $\overrightarrow{r_z}$, $\overrightarrow{v_x}$, $\overrightarrow{v_y}$ und $\overrightarrow{v_z}$. Wir müssen die Arrays mit den Ids und Massen nicht laden, da diese nicht für die Berechnung notwendig sind. Jeder Zugriff auf ein Array führt zu einem Cache Miss, jedoch werden bei jedem Zugriff 16 weitere Elemente geladen, da in in den 64 Byte der Cachzeile $\frac{64}{4} = 16$ Elemente passen. Somit erhalten wir bei jedem 17. Zugriff auf ein Array einen Cache Miss, da die vorherigen 16 Elemente bereits im Cache sind. Es gilt also:
+Wir müssen insgesamt 6 Arrays laden, nämlich $\overrightarrow{r_x}$, $\overrightarrow{r_y}$, $\overrightarrow{r_z}$, $\overrightarrow{v_x}$, $\overrightarrow{v_y}$ und $\overrightarrow{v_z}$. Wir müssen die Arrays mit den Ids und Massen nicht laden, da diese nicht für die Berechnung notwendig sind. Jeder Zugriff auf ein Array führt zu einem Cache Miss, jedoch werden bei jedem Zugriff 16 weitere Elemente geladen, da in den 64 Byte der Cachezeile $\frac{64}{4} = 16$ Elemente passen. Somit erhalten wir bei jedem 17. Zugriff auf ein Array einen Cache Miss, da die vorherigen 16 Elemente bereits im Cache sind. Es gilt also:
 
 $$
 \text{CacheMisses} = 6 \cdot \frac{1.000.000}{16} + 1 = 375.001
 $$
 
-Im Vergleich sehen wir als, dass die Anzahl der Cache Misses mit 5 Arrays deutlich geringer ist als mit einem Array, da bei einem Array nur 2 Elemente pro Cachezeile geladen werden, während bei 5 Arrays 16 Elemente pro Cachezeile geladen werden. Somit können wir die Anzahl der Cache Misses um $\frac{500.001 - 375.001}{500.001} \approx 25\%$ reduzieren, was eine deutliche Verbesserung darstellt.
+Im Vergleich sehen wir also, dass die Anzahl der Cache Misses mit 5 Arrays deutlich geringer ist als mit einem Array, da bei einem Array nur 2 Elemente pro Cachezeile geladen werden, während bei 5 Arrays 16 Elemente pro Cachezeile geladen werden. Somit können wir die Anzahl der Cache Misses um $\frac{500.001 - 375.001}{500.001} \approx 25\%$ reduzieren, was eine deutliche Verbesserung darstellt.
 
 \subsection*{2.3 - Messungen}
 
@@ -120,19 +187,19 @@ Folgende Messergebnisse haben wir erhalten.
     \hline
     \textbf{Programm} & \textbf{Flag} & \textbf{real} & \textbf{user} & \textbf{sys} \\
     \hline
-    structures & \texttt{-O0} & 4.004s & 3.565s & 0.029s \\
-    structures & \texttt{-O3} & 1.048s & 0.771s & 0.011s \\
-    arrays     & \texttt{-O0} & 3.068s & 2.788s & 0.021s \\
-    arrays     & \texttt{-O3} & 0.767s & 0.502s & 0.009s \\
+    structures & \texttt{-O0} & 37.546s & 36.440s & 0.396s \\
+    structures & \texttt{-O3} & 9.248s & 8.474s & 0.132s \\
+    arrays     & \texttt{-O0} & 31.400s & 30.093s & 0.410s \\
+    arrays     & \texttt{-O3} & 5.666s & 5.144s & 0.094s \\
     \hline
   \end{tabular}
   \caption{Laufzeitmessungen mit \texttt{-O0} und \texttt{-O3}}
   \label{tab:timing}
 \end{table}
 
-Wir können sehen, dass die unoptimierte Varianten (\texttt{-O0}) in beiden Fällen langsamer sind als die Compiler optimierten Varianten (\texttt{-O3}). Genau wie in Aufgabe 2.2c vorhergesagt, ist die Variante mit den Arrays pro Element schneller, da mehr Cache Hits auftreten.
+Wir können sehen, dass die unoptimierten Varianten (\texttt{-O0}) in beiden Fällen langsamer sind als die Compiler optimierten Varianten (\texttt{-O3}). Genau wie in Aufgabe 2.2c vorhergesagt, ist die Variante mit den Arrays pro Element schneller, da mehr Cache Hits auftreten.
 
-Der Speedup durch \texttt{-O3} ist in beiden Fällen ähnlich (ca. $3.8\times$ bei \texttt{structures}, ca. $4.0\times$ bei \texttt{arrays}). \texttt{-O3} aktiviert unter anderem Function Inlining (der \texttt{calculate}-Aufruf in \texttt{structures} entfällt), Loop Unrolling und bessere Registerzuweisung. Möglicherweise wird der \texttt{arrays}-Loop durch SIMD-Vektorisierung beschleunigt, da die Daten als zusammenhängende Arrays gleichen Typs vorliegen. Beim \texttt{structures}-Programm erschwert das AoS-Layout eine effiziente Vektorisierung über mehrere Partikel.
+Der Speedup durch \texttt{-O3} ist unterschiedlich (ca. $4.1\times$ bei \texttt{structures}, ca. $5.5\times$ bei \texttt{arrays}). \texttt{-O3} aktiviert unter anderem Function Inlining (der \texttt{calculate}-Aufruf in \texttt{structures} entfällt), Loop Unrolling und bessere Registerzuweisung. Möglicherweise wird der \texttt{arrays}-Loop durch SIMD-Vektorisierung beschleunigt, da die Daten als zusammenhängende Arrays gleichen Typs vorliegen. Beim \texttt{structures}-Programm erschwert das AoS-Layout eine effiziente Vektorisierung über mehrere Partikel.
 
 \subsection*{2.4 - PCAM Matrix Multiplikation}
 
@@ -143,18 +210,18 @@ $$
 c_{ij} = \sum_k a_{ik} \cdot b_{kj}
 $$
 
-\paragraph{Step 1 - Partitionierung} Im Rahmen der Lehrveranstaltung konzentrieren wir uns auf quadratische Matrizen. Da keine Matrixeinträge gleich berechnet werden, eigenen diese sich gut als Partitionierung. Die in der Übung vorgestellten Kriterien werden hier erfüllt.
+\paragraph{Step 1 - Partitionierung} Im Rahmen der Lehrveranstaltung konzentrieren wir uns auf quadratische Matrizen. Da keine Matrixeinträge gleich berechnet werden, eignen diese sich gut als Partitionierung. Die in der Übung vorgestellten Kriterien werden hier erfüllt.
 \begin{enumerate}
   \item Die Anzahl der Tasks ist $n^2$ und somit für genügend große $n$ eine Größenordnung höher als die Anzahl der Kerne.
   \item Es tritt keine Redundanz auf, weil jeder Eintrag unterschiedlich berechnet wird.
   \item Die Lastenverteilung ist identisch, da die Berechnungsvorschrift für alle gleich ist.
-  \item Die Tasks skalieren adequat (quadratisch) mit der Größe der Matrix.
+  \item Die Tasks skalieren adäquat (quadratisch) mit der Größe der Matrix.
 \end{enumerate}
 
 \paragraph{Step 2 - Communication} Wie in der Übung vorgestellt, können wir die Kommunikation in die folgenden Kategorien einteilen:
 \begin{itemize}
     \item \textit{Lokal vs. Global}: Die finale Zusammensetzung der Matrix benötigt die Daten aller anderen Tasks, also ist die Kommunikation global.
-    \item \textit{Strukturiert vs. Unstrukturiert}: Die Kommunikation ist struktuiert, weil nur in einem festgelegtem Pattern kommuniziert wird. 
+    \item \textit{Strukturiert vs. Unstrukturiert}: Die Kommunikation ist strukturiert, weil nur in einem festgelegten Pattern kommuniziert wird. 
         Alle Tasks geben ihr Ergebnis an die Task weiter, die das Endergebnis berechnet. 
     \item \textit{Statisch vs. Dynamisch}: Die Kommunikation ist statisch, da die Kommunikationspartner bereits vor der Berechnung feststehen und sich nicht ändern.
         \item \textit{Synchron vs. Asynchron}: Die Kommunikation ist für die berechnenden Tasks asynchron, 
@@ -163,13 +230,13 @@ $$
             bevor sie mit der Berechnung beginnen kann.
 \end{itemize}
 
-Wie bereits schon angeschnitten ist das Kommunikationsmuster für das Einsammeln zentralisiert (sternförmig), da alle Tasks ihre Ergebnisse an die Task weitergeben, die das Endergebnis zusammensetzt. Im Shared-Memory-Modell (wie beim SPMD-Ansatz auf Mehrkernprozessoren) entfällt dieses Einsammeln jedoch vollständig: Jede Task schreibt ihr Ergebnis direkt in die entsprechende Position von $C$, da alle Tasks auf denselben Speicher zugreifen.
+Wie bereits angeschnitten ist das Kommunikationsmuster für das Einsammeln zentralisiert (sternförmig), da alle Tasks ihre Ergebnisse an die Task weitergeben, die das Endergebnis zusammensetzt. Im Shared-Memory-Modell (wie beim SPMD-Ansatz auf Mehrkernprozessoren) entfällt dieses Einsammeln jedoch vollständig: Jede Task schreibt ihr Ergebnis direkt in die entsprechende Position von $C$, da alle Tasks auf denselben Speicher zugreifen.
 
 In der Übung wurden folgende Kriterien für die Kommunikation vorgestellt:
 \begin{enumerate}
     \item{\textit{Ausgewogenheit}}: Jede Task führt die gleiche Anzahl an Berechnungen durch, daher ist die Kommunikation ausgewogen.
         Die Task, die das Endergebnis berechnet, hat jedoch eine höhere Kommunikationslast, da sie die Ergebnisse aller anderen Tasks sammeln muss.
-        Wir sehen aber keinen sinnvoll Weg, die Kommunikation besser zu verteilen. Es finden eigentlich keine Berechnungen mehr statt,
+        Wir sehen aber keinen sinnvollen Weg, die Kommunikation besser zu verteilen. Es finden eigentlich keine Berechnungen mehr statt,
         denn die Ergebnisse der anderen Tasks müssen nur noch eingesammelt und in $C$ eingetragen werden, was im Vergleich zur Berechnung der Einträge
         von $C$ relativ wenig Aufwand ist.
     \item{\textit{Lokalität}}: Jede berechnende Task kommuniziert mit genau einem Partner (dem Kollektor), was eine gute Lokalität ergibt. Der Kollektor hingegen muss mit allen $n^2$ Tasks kommunizieren, was eine schlechte Lokalität bedeutet.
@@ -189,7 +256,7 @@ Auch hier können wir die Kriterien für die Agglomeration bewerten:
 \end{enumerate}
 
 Die Matrix zeilen- oder spaltenweise zu berechnen, führt zu mehr Cache Hits, da für jede Berechnung entweder der Spalten- oder Zeilenvektor von $A$ bzw. $B$ im Cache gehalten werden kann, während die Einträge von $C$ sequentiell berechnet werden.
-Für große Matrizen könnte es jedoch Sinn ergeben, die Spalten oder Zeilen weiter zu partitionieren, um die Anzahl der Tasks zu erhöhen und damit die Parallelität zu verbessern. Die oben beschriebnen Aspekte bleiben aber dennoch fast vollständig erhalten. Nur die Anzahl der Kommunikationspartner des Kollektors erhöht sich, da nun mehr Tasks ihre Ergebnisse an den Kollektor senden müssen. Mehrere Tasks würden aber zu einer schnelleren Berechnung führen, weshalb die erhöhte Kommunikationslast des Kollektors in Kauf genommen werden könnte.
+Für große Matrizen könnte es jedoch Sinn ergeben, die Spalten oder Zeilen weiter zu partitionieren, um die Anzahl der Tasks zu erhöhen und damit die Parallelität zu verbessern. Die oben beschriebenen Aspekte bleiben aber dennoch fast vollständig erhalten. Nur die Anzahl der Kommunikationspartner des Kollektors erhöht sich, da nun mehr Tasks ihre Ergebnisse an den Kollektor senden müssen. Mehrere Tasks würden aber zu einer schnelleren Berechnung führen, weshalb die erhöhte Kommunikationslast des Kollektors in Kauf genommen werden könnte.
 
 
 \paragraph{Step 4 - Mapping} Da die Rechenlast pro Task identisch ist und die Anzahl der Tasks statisch feststeht, verwenden wir das \textit{SPMD-Modell} mit statischem Mapping. Jeder agglomerierte Task (eine Zeile von $C$) wird exakt einem Kern zugewiesen.

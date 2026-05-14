@@ -9,7 +9,7 @@ typedef struct {
   float_t vx, vy, vz;
 } particle_t;
 
-#define ELEMENT_COUNT 1000000
+#define ELEMENT_COUNT 10000000
 #define ITERATIONS 1000
 
 void initElements(particle_t *particles) {
