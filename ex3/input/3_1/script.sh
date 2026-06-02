@@ -7,7 +7,7 @@ gcc --version
 make clean
 make
 
-for i in 1; do
+for i in 1 2 3; do
     echo "Run $i:"
     ./mmul_seq
 done
