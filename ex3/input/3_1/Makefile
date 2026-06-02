@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O2 -Wall -Wextra -std=gnu11
+CFLAGS = -O3 -Wall -Wextra -std=gnu11
 
 OBJ := tpool.o
 SEQ_SRC := mmul_seq.c
