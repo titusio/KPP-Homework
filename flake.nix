@@ -55,9 +55,9 @@
             pkgs.just
             pkgs.zsh
             pkgs.texlab
+            pkgs.gcc
+            pkgs.clang-tools
             tex
-
-            # pkgs.clang
           ];
           shellHook = "exec zsh";
         };
