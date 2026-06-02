@@ -84,6 +84,7 @@ static bool matrix_mult(const matrix_t *a, const matrix_t *b, matrix_t *r) {
     return false;
   }
 
+  // first run took: 701.976925
   for (int i = 0; i < r->rows; i++) {
     for (int j = 0; j < r->cols; j++) {
       matrix_elem_t y = 0;
