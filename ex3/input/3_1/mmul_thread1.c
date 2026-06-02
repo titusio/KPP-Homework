@@ -8,6 +8,8 @@
  *
  * vim: expandtab shiftwidth=4 tabstop=4
  */
+
+#include "tpool.h"
 #include <bits/time.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -71,6 +73,44 @@ int write_matrix(const char *filepath, matrix_t *matrix) {
   return 0;
 }
 
+int get_num_threads() {
+  char *env = getenv("NUM_THREADS");
+  if (env == NULL) {
+    return -1;
+  }
+
+  int num_threads = (int)strtol(env, NULL, 10);
+
+  if (num_threads <= 0) {
+    return -1;
+  }
+
+  return num_threads;
+}
+
+typedef struct {
+  const matrix_t *a;
+  const matrix_t *b;
+  matrix_t *r;
+  int i;
+  int k;
+} thread_arg_t;
+
+void calculate_element(void *arg) {
+  thread_arg_t *calc_arg = (thread_arg_t *)arg;
+
+  const matrix_t *a = calc_arg->a;
+  const matrix_t *b = calc_arg->b;
+  matrix_t *r = calc_arg->r;
+
+  int i = calc_arg->i;
+  int k = calc_arg->k;
+  for (int j = 0; j < a->cols; j++) {
+    r->data[i * r->cols + k] =
+        a->data[i * a->cols + j] * b->data[j * b->cols + k];
+  }
+}
+
 static bool matrix_mult(const matrix_t *a, const matrix_t *b, matrix_t *r) {
   if (a->cols != b->rows) {
     return false;
@@ -83,23 +123,26 @@ static bool matrix_mult(const matrix_t *a, const matrix_t *b, matrix_t *r) {
     return false;
   }
 
-  // first run took: 701.976925
-  //
-  // Optimized data access pattern (i-j-k):
-  // Run 1:
-  // time 51.920917
-  // Run 2:
-  // time 51.877482
-  // Run 3:
-  // time 51.913425
+  // with one thread per element
+  int num_threads = get_num_threads();
+  if (num_threads < 0) {
+    return false;
+  }
+
+  thread_arg_t *args = malloc(r->rows * r->cols * sizeof(thread_arg_t));
+
+  tpool_t *pool = tpool_init(num_threads, DEFAULT_MATRIX_SIZE);
+
   for (int i = 0; i < r->rows; i++) {
-    for (int j = 0; j < r->cols; j++) {
-      for (int k = 0; k < a->cols; ++k) {
-        matrix_elem_t y = a->data[i * a->cols + j] * b->data[j * b->cols + k];
-        r->data[i * r->cols + k] += y;
-      }
+    for (int k = 0; k < r->cols; k++) {
+      int index = i * r->cols + k;
+      args[index] = (thread_arg_t){.a = a, .b = b, .r = r, .i = i, .k = k};
+      tpool_insert(pool, calculate_element, &args[index]);
     }
   }
+
+  tpool_shutdown(pool);
+  free(args);
 
   return true;
 }
@@ -116,6 +159,7 @@ int main(int argc, char *argv[]) {
     if (endptr == argv[1] || *endptr != '\0' || parsed == 0UL ||
         parsed > INT32_MAX) {
       fprintf(stderr, "Usage: %s [matrix_size]\n", argv[0]);
+
       return EXIT_FAILURE;
     }
     matrix_size = (int)parsed;

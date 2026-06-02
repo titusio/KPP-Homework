@@ -1,11 +1,47 @@
+deploy-3_1-thread1:
+    #!/usr/bin/env bash
+    set -e
+    rsync -av --exclude='*.o' ex3/input/3_1/ cluster:~/kpp/ex3/3_1/
+    JOB=$(ssh cluster "cd ~/kpp/ex3/3_1 && sbatch sbatch_thread1.sh" | awk '{print $4}')
+    echo "Submitted job $JOB"
+    START=$(date +%s)
+    while ssh cluster "squeue -j $JOB -h 2>/dev/null" | grep -q .; do
+        ELAPSED=$(( $(date +%s) - START ))
+        echo "Waiting for job $JOB... ${ELAPSED}s elapsed"; sleep 10
+    done
+    echo "Job $JOB done, fetching output..."
+    scp "cluster:~/kpp/ex3/3_1/out.$JOB" "cluster:~/kpp/ex3/3_1/err.$JOB" ex3/input/3_1/
+    echo "--- out.$JOB ---"; cat ex3/input/3_1/out.$JOB
+    echo "--- err.$JOB ---"; cat ex3/input/3_1/err.$JOB
+    rm ex3/input/3_1/out.* ex3/input/3_1/err.*
+
+deploy-3_1-thread2:
+    #!/usr/bin/env bash
+    set -e
+    rsync -av --exclude='*.o' ex3/input/3_1/ cluster:~/kpp/ex3/3_1/
+    JOB=$(ssh cluster "cd ~/kpp/ex3/3_1 && sbatch sbatch_thread2.sh" | awk '{print $4}')
+    echo "Submitted job $JOB"
+    START=$(date +%s)
+    while ssh cluster "squeue -j $JOB -h 2>/dev/null" | grep -q .; do
+        ELAPSED=$(( $(date +%s) - START ))
+        echo "Waiting for job $JOB... ${ELAPSED}s elapsed"; sleep 10
+    done
+    echo "Job $JOB done, fetching output..."
+    scp "cluster:~/kpp/ex3/3_1/out.$JOB" "cluster:~/kpp/ex3/3_1/err.$JOB" ex3/input/3_1/
+    echo "--- out.$JOB ---"; cat ex3/input/3_1/out.$JOB
+    echo "--- err.$JOB ---"; cat ex3/input/3_1/err.$JOB
+    rm ex3/input/3_1/out.* ex3/input/3_1/err.*
+
 deploy-3_1:
     #!/usr/bin/env bash
     set -e
     rsync -av --exclude='*.o' ex3/input/3_1/ cluster:~/kpp/ex3/3_1/
     JOB=$(ssh cluster "cd ~/kpp/ex3/3_1 && sbatch sbatch.sh" | awk '{print $4}')
     echo "Submitted job $JOB"
+    START=$(date +%s)
     while ssh cluster "squeue -j $JOB -h 2>/dev/null" | grep -q .; do
-        echo "Waiting for job $JOB..."; sleep 10
+        ELAPSED=$(( $(date +%s) - START ))
+        echo "Waiting for job $JOB... ${ELAPSED}s elapsed"; sleep 10
     done
     echo "Job $JOB done, fetching output..."
     scp "cluster:~/kpp/ex3/3_1/out.$JOB" "cluster:~/kpp/ex3/3_1/err.$JOB" ex3/input/3_1/
